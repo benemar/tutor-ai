@@ -1,0 +1,29 @@
+{
+  "name": "TelecomLab — Esercizi di Telecomunicazioni",
+  "short_name": "TelecomLab",
+  "description": "Risolvi esercizi di telecomunicazioni, fotografa il tuo svolgimento e ricevi correzione AI istantanea.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0e1a",
+  "theme_color": "#0a0e1a",
+  "lang": "it",
+  "categories": ["education"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='30' fill='%230a0e1a'/%3E%3Ccircle cx='96' cy='96' r='28' fill='%2300d4ff'/%3E%3Ccircle cx='96' cy='96' r='8' fill='%230a0e1a'/%3E%3Ccircle cx='96' cy='96' r='48' fill='none' stroke='%2300d4ff' stroke-width='5' opacity='0.4'/%3E%3Ccircle cx='96' cy='96' r='68' fill='none' stroke='%2300d4ff' stroke-width='3' opacity='0.2'/%3E%3Cline x1='96' y1='68' x2='96' y2='28' stroke='%2300d4ff' stroke-width='7' stroke-linecap='round'/%3E%3Cline x1='78' y1='44' x2='114' y2='44' stroke='%2300d4ff' stroke-width='5' stroke-linecap='round'/%3E%3Cline x1='84' y1='32' x2='108' y2='32' stroke='%2300d4ff' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nuovo esercizio",
+      "short_name": "Esercizio",
+      "description": "Inizia subito un esercizio",
+      "url": "./index.html"
+    }
+  ]
+}

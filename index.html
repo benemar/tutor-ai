@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TelecomLab">
+<meta name="description" content="Esercizi interattivi di Telecomunicazioni con correzione AI">
+<link rel="manifest" href="manifest.json">
+<!-- Favicon e icone inline — nessun file esterno richiesto -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a0e1a'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%2300d4ff'/%3E%3Ccircle cx='32' cy='32' r='2' fill='%230a0e1a'/%3E%3Ccircle cx='32' cy='32' r='14' fill='none' stroke='%2300d4ff' stroke-width='2' opacity='0.5'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%2300d4ff' stroke-width='1.5' opacity='0.25'/%3E%3Cline x1='32' y1='24' x2='32' y2='10' stroke='%2300d4ff' stroke-width='2.5' stroke-linecap='round'/%3E%3Cline x1='26' y1='16' x2='38' y2='16' stroke='%2300d4ff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='30' fill='%230a0e1a'/%3E%3Ccircle cx='96' cy='96' r='28' fill='%2300d4ff'/%3E%3Ccircle cx='96' cy='96' r='8' fill='%230a0e1a'/%3E%3Ccircle cx='96' cy='96' r='48' fill='none' stroke='%2300d4ff' stroke-width='5' opacity='0.4'/%3E%3Ccircle cx='96' cy='96' r='68' fill='none' stroke='%2300d4ff' stroke-width='3' opacity='0.2'/%3E%3Cline x1='96' y1='68' x2='96' y2='28' stroke='%2300d4ff' stroke-width='7' stroke-linecap='round'/%3E%3Cline x1='78' y1='44' x2='114' y2='44' stroke='%2300d4ff' stroke-width='5' stroke-linecap='round'/%3E%3Cline x1='84' y1='32' x2='108' y2='32' stroke='%2300d4ff' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>TelecomLab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   RESET & ROOT
+══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg:       #0a0e1a;
+  --bg2:      #0f1525;
+  --bg3:      #151c30;
+  --surface:  #1a2340;
+  --border:   #253050;
+  --glow:     #00d4ff;
+  --glow2:    #7c3aed;
+  --amber:    #f59e0b;
+  --green:    #10b981;
+  --red:      #ef4444;
+  --text:     #e8edf8;
+  --muted:    #6b7fa3;
+  --mono:     'Space Mono', monospace;
+  --sans:     'Outfit', sans-serif;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ══════════════════════════════════════════
+   SCANLINE OVERLAY
+══════════════════════════════════════════ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,212,255,0.015) 2px,
+    rgba(0,212,255,0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ══════════════════════════════════════════
+   SCREENS
+══════════════════════════════════════════ */
+.screen {
+  display: none;
+  flex-direction: column;
+  height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  animation: fadeUp 0.3s ease;
+}
+.screen.active { display: flex; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════ */
+.header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-family: var(--mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--glow);
+  text-shadow: 0 0 20px rgba(0,212,255,0.5);
+  flex: 1;
+}
+.logo span { color: var(--text); }
+
+.btn-back {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 4px 8px 4px 0;
+  line-height: 1;
+}
+
+.header-meta {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-align: right;
+  line-height: 1.4;
+}
+
+/* ══════════════════════════════════════════
+   PROGRESS BAR
+══════════════════════════════════════════ */
+.progress-bar {
+  height: 3px;
+  background: var(--bg3);
+  flex-shrink: 0;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--glow2), var(--glow));
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px var(--glow);
+}
+
+/* ══════════════════════════════════════════
+   CONTENT
+══════════════════════════════════════════ */
+.content {
+  flex: 1;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+}
+
+/* ══════════════════════════════════════════
+   HOME SCREEN
+══════════════════════════════════════════ */
+.home-hero {
+  background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 28px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.home-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(0,212,255,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.home-hero::after {
+  content: '📡';
+  position: absolute;
+  bottom: 10px; right: 20px;
+  font-size: 4rem;
+  opacity: 0.12;
+}
+
+.home-tag {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--glow);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.home-tag::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--glow);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--glow);
+  animation: blink 1.5s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+.home-title {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  margin-bottom: 10px;
+}
+.home-title .hl { color: var(--glow); }
+
+.home-sub {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* STATS */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 12px;
+  text-align: center;
+}
+.stat-num {
+  font-family: var(--mono);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-lbl { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* TOPIC CARDS */
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+.topic-list { display: flex; flex-direction: column; gap: 8px; }
+
+.topic-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  -webkit-user-select: none;
+}
+.topic-card:active, .topic-card.selected {
+  background: var(--surface);
+  border-color: var(--glow);
+  box-shadow: 0 0 0 1px var(--glow);
+}
+.topic-icon {
+  width: 42px; height: 42px;
+  background: var(--bg3);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.topic-card.selected .topic-icon { background: rgba(0,212,255,0.15); }
+.topic-info { flex: 1; }
+.topic-name { font-weight: 600; font-size: 0.92rem; margin-bottom: 2px; }
+.topic-count { font-size: 0.72rem; color: var(--muted); font-family: var(--mono); }
+.topic-check { color: var(--glow); font-size: 1.1rem; opacity: 0; transition: opacity 0.2s; }
+.topic-card.selected .topic-check { opacity: 1; }
+
+/* ══════════════════════════════════════════
+   EXERCISE SCREEN
+══════════════════════════════════════════ */
+.ex-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 22px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.ex-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--glow2), var(--glow));
+}
+
+.ex-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.ex-topic-badge {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: rgba(0,212,255,0.12);
+  color: var(--glow);
+  border: 1px solid rgba(0,212,255,0.3);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.ex-diff {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+.diff-pip {
+  width: 20px; height: 5px;
+  border-radius: 2px;
+  background: var(--border);
+}
+.diff-pip.on { background: var(--glow); box-shadow: 0 0 6px var(--glow); }
+
+.ex-question {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.ex-question strong {
+  color: var(--glow);
+  font-family: var(--mono);
+}
+.ex-question em { color: var(--amber); font-style: normal; }
+
+.ex-formula-wrap {
+  margin-top: 12px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Tap hint — visible when formula is hidden */
+.ex-formula-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(0,212,255,0.05);
+  border: 1px dashed rgba(0,212,255,0.3);
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  transition: background 0.2s, border-color 0.2s;
+}
+.ex-formula-hint::before {
+  content: 'ƒ';
+  font-size: 1rem;
+  color: rgba(0,212,255,0.4);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.ex-formula-wrap:active .ex-formula-hint,
+.ex-formula-wrap:hover .ex-formula-hint {
+  background: rgba(0,212,255,0.09);
+  border-color: rgba(0,212,255,0.55);
+}
+
+/* Actual formula — revealed on click */
+.ex-formula {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--glow);
+  border-radius: 0 10px 10px 0;
+  padding: 12px 16px;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--glow);
+  line-height: 1.8;
+  display: none;
+  animation: formula-reveal 0.3s ease;
+  box-shadow: 0 0 18px rgba(0,212,255,0.12);
+  position: relative;
+}
+.ex-formula::after {
+  content: '👆 tocca per nascondere';
+  position: absolute;
+  bottom: 5px; right: 10px;
+  font-size: 0.55rem;
+  font-family: var(--mono);
+  color: var(--muted);
+  opacity: 0.6;
+  letter-spacing: 0.05em;
+}
+
+@keyframes formula-reveal {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ex-number {
+  position: absolute;
+  top: 18px; right: 18px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--border);
+}
+
+/* CIRCUIT IMAGE */
+.ex-circuit {
+  margin-top: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  text-align: center;
+}
+.ex-circuit img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+.ex-circuit-label {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 6px 12px;
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+}
+.ex-circuit-error {
+  padding: 18px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+
+/* INSTR BOX */
+
+
+/* ══════════════════════════════════════════
+   CAMERA SCREEN
+══════════════════════════════════════════ */
+.cam-area {
+  background: var(--bg2);
+  border: 2px dashed var(--border);
+  border-radius: 18px;
+  aspect-ratio: 4/3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.cam-area:active { border-color: var(--glow); }
+.cam-area.has-photo { border-style: solid; border-color: var(--glow); }
+
+.cam-ph { text-align: center; color: var(--muted); }
+.cam-ph .cam-ic { font-size: 3rem; margin-bottom: 8px; }
+.cam-ph p { font-size: 0.82rem; line-height: 1.5; }
+
+.cam-preview {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  position: absolute; inset: 0;
+  display: none;
+}
+.cam-preview.visible { display: block; }
+
+.cam-retake {
+  position: absolute;
+  bottom: 12px; right: 12px;
+  background: rgba(10,14,26,0.85);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: none;
+}
+.cam-preview.visible ~ .cam-retake { display: block; }
+
+#file-input { display: none; }
+
+.cam-tip {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.25);
+  border-radius: 12px;
+  align-items: flex-start;
+}
+.cam-tip-icon { font-size: 1.1rem; flex-shrink: 0; }
+.cam-tip-text { font-size: 0.78rem; color: var(--amber); line-height: 1.5; }
+
+/* ══════════════════════════════════════════
+   CHECKING SCREEN
+══════════════════════════════════════════ */
+.checking-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.radar {
+  width: 80px; height: 80px;
+  position: relative;
+  flex-shrink: 0;
+}
+.radar-ring {
+  position: absolute; inset: 0;
+  border: 2px solid var(--glow);
+  border-radius: 50%;
+  opacity: 0;
+  animation: radar-expand 1.8s ease-out infinite;
+}
+.radar-ring:nth-child(2) { animation-delay: 0.6s; }
+.radar-ring:nth-child(3) { animation-delay: 1.2s; }
+.radar-core {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px; height: 24px;
+  background: var(--glow);
+  border-radius: 50%;
+  box-shadow: 0 0 20px var(--glow);
+  animation: pulse-core 1.8s ease-in-out infinite;
+}
+@keyframes radar-expand {
+  0% { transform: scale(0.3); opacity: 0.8; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+@keyframes pulse-core {
+  0%,100% { transform: translate(-50%,-50%) scale(1); }
+  50% { transform: translate(-50%,-50%) scale(1.2); }
+}
+
+.checking-title {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--glow);
+  margin-bottom: 4px;
+}
+.checking-msg {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.5;
+  max-width: 260px;
+}
+
+.checking-log {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  width: 100%;
+  max-width: 320px;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  line-height: 2;
+}
+.log-line { display: flex; align-items: center; gap: 8px; }
+.log-line.done { color: var(--green); }
+.log-line.active { color: var(--glow); }
+.log-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.log-line.active .log-dot { animation: blink 0.8s infinite; }
+
+/* ══════════════════════════════════════════
+   RESULT SCREEN
+══════════════════════════════════════════ */
+.result-header {
+  border-radius: 18px;
+  padding: 26px 22px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.result-header.correct {
+  background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.05));
+  border: 1px solid rgba(16,185,129,0.4);
+}
+.result-header.wrong {
+  background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.05));
+  border: 1px solid rgba(239,68,68,0.35);
+}
+
+.result-icon { font-size: 3rem; margin-bottom: 10px; }
+.result-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+.result-header.correct .result-title { color: var(--green); }
+.result-header.wrong .result-title { color: var(--red); }
+.result-score {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.feedback-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+.card-label {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--glow);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.card-label::before { content: '//'; color: var(--border); }
+.feedback-text { font-size: 0.88rem; line-height: 1.65; color: var(--text); }
+
+.help-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.hint-card {
+  background: rgba(245,158,11,0.07);
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 14px;
+  padding: 16px;
+}
+.hint-card .card-label { color: var(--amber); }
+.hint-card .card-label::before { color: rgba(245,158,11,0.3); }
+.hint-text { font-size: 0.82rem; line-height: 1.6; color: var(--text); }
+
+.sol-card {
+  background: rgba(124,58,237,0.07);
+  border: 1px solid rgba(124,58,237,0.3);
+  border-radius: 14px;
+  padding: 16px;
+}
+.sol-card .card-label { color: #a78bfa; }
+.sol-card .card-label::before { color: rgba(124,58,237,0.3); }
+.sol-formula {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: #c4b5fd;
+  line-height: 1.9;
+  margin-top: 6px;
+  white-space: pre-wrap;
+}
+
+/* ══════════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════════ */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 15px 22px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.12s;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+}
+.btn:active { transform: scale(0.97); opacity: 0.85; }
+.btn:disabled { opacity: 0.35; pointer-events: none; }
+
+.btn-glow {
+  background: linear-gradient(135deg, #0891b2, var(--glow));
+  color: #0a0e1a;
+  font-weight: 700;
+  box-shadow: 0 4px 24px rgba(0,212,255,0.3);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  font-weight: 400;
+}
+.btn-amber {
+  background: rgba(245,158,11,0.15);
+  color: var(--amber);
+  border: 1px solid rgba(245,158,11,0.35);
+}
+.btn-violet {
+  background: rgba(124,58,237,0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(124,58,237,0.35);
+}
+
+.btn-stack { display: flex; flex-direction: column; gap: 10px; }
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* ══════════════════════════════════════════
+   INSTALL BANNER
+══════════════════════════════════════════ */
+.install-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 16px; right: 16px;
+  background: var(--surface);
+  border: 1px solid var(--glow);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: none;
+  align-items: center;
+  gap: 14px;
+  z-index: 1000;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 40px rgba(0,212,255,0.1);
+  animation: slideUp 0.35s ease;
+}
+.install-banner.visible { display: flex; }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.install-icon { font-size: 2rem; flex-shrink: 0; }
+.install-text { flex: 1; }
+.install-text strong { font-size: 0.88rem; display: block; margin-bottom: 2px; }
+.install-text span { font-size: 0.75rem; color: var(--muted); }
+.install-btn {
+  background: var(--glow);
+  color: var(--bg);
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.install-close {
+  background: none; border: none;
+  color: var(--muted); font-size: 1.1rem;
+  cursor: pointer; padding: 4px;
+}
+
+/* ══════════════════════════════════════════
+   OFFLINE BADGE
+══════════════════════════════════════════ */
+.offline-badge {
+  position: fixed;
+  top: 8px; left: 50%; transform: translateX(-50%);
+  background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.4);
+  color: var(--red);
+  font-size: 0.7rem;
+  font-family: var(--mono);
+  padding: 5px 14px;
+  border-radius: 20px;
+  z-index: 200;
+  display: none;
+  letter-spacing: 0.06em;
+}
+.offline-badge.visible { display: block; }
+</style>
+</head>
+<body>
+
+<div class="offline-badge" id="offline-badge">⚡ OFFLINE</div>
+
+<!-- ══════════════════════════════════ HOME ══ -->
+<div class="screen active" id="screen-home">
+  <div class="header">
+    <div class="logo">Telecom<span>Lab</span></div>
+    <div class="header-meta" id="home-version">v1.0<br>PWA</div>
+  </div>
+  <div class="content">
+    <div class="home-hero">
+      <div class="home-tag">Sistema attivo</div>
+      <div class="home-title">Esercizi di<br><span class="hl">Telecomu&shy;nicazioni</span></div>
+      <div class="home-sub">Risolvi, fotografa, invia. L'AI corregge il tuo svolgimento e ti guida verso la soluzione.</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--glow)" id="st-total">0</div>
+        <div class="stat-lbl">Svolti</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--green)" id="st-correct">0</div>
+        <div class="stat-lbl">Corretti</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--amber)" id="st-streak">0</div>
+        <div class="stat-lbl">Streak 🔥</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Scegli argomento</div>
+      <div class="topic-list" id="topic-list"></div>
+    </div>
+
+    <button class="btn btn-glow" onclick="startExercise()">
+      ⚡ Inizia esercizio
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ EXERCISE ══ -->
+<div class="screen" id="screen-exercise">
+  <div class="header">
+    <button class="btn-back" onclick="goHome()">←</button>
+    <div class="logo">Telecom<span>Lab</span></div>
+    <div class="header-meta">passo 1/3<br>LEGGI</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
+  <div class="content">
+    <div class="ex-card" id="ex-card">
+      <div class="ex-number" id="ex-number">#01</div>
+      <div class="ex-meta">
+        <div class="ex-topic-badge" id="ex-badge">TOPIC</div>
+        <div class="ex-diff" id="ex-diff"></div>
+      </div>
+      <div class="ex-question" id="ex-question">Caricamento...</div>
+      <div class="ex-formula-wrap" id="ex-formula-wrap" style="display:none" onclick="toggleFormula()">
+        <div class="ex-formula-hint" id="ex-formula-hint">tocca per mostrare la formula risolutiva</div>
+        <div class="ex-formula" id="ex-formula"></div>
+      </div>
+      <div class="ex-circuit" id="ex-circuit" style="display:none">
+        <img id="ex-circuit-img" src="" alt="Schema circuito" />
+        <div class="ex-circuit-label">📐 Schema circuito</div>
+      </div>
+    </div>
+
+    <div class="btn-stack">
+      <button class="btn btn-glow" onclick="showScreen('screen-camera')">
+        📷 Ho risolto — Fotografa
+      </button>
+      <button class="btn btn-outline" onclick="newExercise()">
+        ↺ Altro esercizio
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ CAMERA ══ -->
+<div class="screen" id="screen-camera">
+  <div class="header">
+    <button class="btn-back" onclick="showScreen('screen-exercise')">←</button>
+    <div class="logo">Telecom<span>Lab</span></div>
+    <div class="header-meta">passo 2/3<br>FOTO</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
+  <div class="content">
+    <div class="cam-area" id="cam-area" onclick="triggerCamera()">
+      <div class="cam-ph" id="cam-ph">
+        <div class="cam-ic">📷</div>
+        <p>Tocca per scattare<br>o scegli dalla galleria</p>
+      </div>
+      <img class="cam-preview" id="cam-preview" alt="anteprima" />
+      <button class="cam-retake" onclick="event.stopPropagation(); triggerCamera()">🔄 Rifai</button>
+    </div>
+    <input type="file" id="file-input" accept="image/*" capture="environment" onchange="handlePhoto(event)">
+
+    <div class="cam-tip">
+      <div class="cam-tip-icon">💡</div>
+      <div class="cam-tip-text">Assicurati che lo svolgimento sia <strong>leggibile e ben illuminato</strong>. Includi tutti i passaggi.</div>
+    </div>
+
+    <div class="btn-stack">
+      <button class="btn btn-glow" id="btn-send" disabled onclick="goCheck()">
+        🚀 Invia per correzione
+      </button>
+      <button class="btn btn-ghost" onclick="showScreen('screen-exercise')">← Torna all'esercizio</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ CHECKING ══ -->
+<div class="screen" id="screen-checking">
+  <div class="header">
+    <div class="logo" style="margin:auto">Telecom<span>Lab</span></div>
+  </div>
+  <div class="checking-center">
+    <div class="radar">
+      <div class="radar-ring"></div>
+      <div class="radar-ring"></div>
+      <div class="radar-ring"></div>
+      <div class="radar-core"></div>
+    </div>
+    <div>
+      <div class="checking-title">AI Analysis</div>
+      <div class="checking-msg" id="checking-msg">Analisi del tuo svolgimento in corso...</div>
+    </div>
+    <div class="checking-log" id="checking-log">
+      <div class="log-line done"><div class="log-dot"></div>Immagine ricevuta</div>
+      <div class="log-line active" id="log2"><div class="log-dot"></div>Estrazione testo...</div>
+      <div class="log-line" id="log3"><div class="log-dot"></div>Verifica passaggi</div>
+      <div class="log-line" id="log4"><div class="log-dot"></div>Generazione feedback</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ RESULT ══ -->
+<div class="screen" id="screen-result">
+  <div class="header">
+    <button class="btn-back" onclick="goHome()">⌂</button>
+    <div class="logo">Telecom<span>Lab</span></div>
+    <div class="header-meta">passo 3/3<br>RISULTATO</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+  <div class="content">
+    <div class="result-header" id="result-header">
+      <div class="result-icon" id="result-icon">✅</div>
+      <div class="result-title" id="result-title">Corretto!</div>
+      <div class="result-score" id="result-score">Punteggio: 9/10</div>
+    </div>
+
+    <div class="feedback-card">
+      <div class="card-label">Feedback AI</div>
+      <div class="feedback-text" id="ai-feedback">...</div>
+    </div>
+
+    <div id="help-section" style="display:none">
+      <div class="help-row">
+        <button class="btn btn-amber" onclick="toggleHint()">💡 Suggerimento</button>
+        <button class="btn btn-violet" onclick="toggleSolution()">📖 Soluzione</button>
+      </div>
+      <div id="hint-area" style="margin-top:10px"></div>
+      <div id="sol-area" style="margin-top:10px"></div>
+    </div>
+
+    <div class="btn-stack" style="margin-top:4px">
+      <button class="btn btn-glow" onclick="newExercise(); showScreen('screen-exercise')">
+        ⚡ Nuovo esercizio
+      </button>
+      <button class="btn btn-ghost" onclick="goHome()">⌂ Torna alla home</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ INSTALL ══ -->
+<div class="install-banner" id="install-banner">
+  <div class="install-icon">📲</div>
+  <div class="install-text">
+    <strong>Installa TelecomLab</strong>
+    <span>Usala offline come app nativa</span>
+  </div>
+  <button class="install-btn" id="install-btn">Installa</button>
+  <button class="install-close" onclick="dismissInstall()">✕</button>
+</div>
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════
+   ESERCIZI DI TELECOMUNICAZIONI
+   Dati caricati dinamicamente da esercizi.json
+══════════════════════════════════════════ */
+let TOPICS = [];
+let EXERCISES = {};
+
+/* ══════════════════════════════════════════
+   APP STATE
+══════════════════════════════════════════ */
+const state = {
+  selectedTopic: null,
+  currentExercise: null,
+  photoDataUrl: null,
+  stats: { total: 0, correct: 0, streak: 0 },
+  hintVisible: false,
+  solVisible: false,
+};
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+async function init() {
+  await loadExercises();
+  renderTopics();
+  loadStats();
+  renderStats();
+  setupPWA();
+  setupOfflineDetection();
+}
+
+async function loadExercises() {
+  try {
+    const resp = await fetch('esercizi.json');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    TOPICS    = data.topics   || [];
+    EXERCISES = data.exercises || {};
+    // Seleziona il primo topic come default
+    if (TOPICS.length > 0) state.selectedTopic = TOPICS[0].id;
+  } catch (err) {
+    console.error('Errore caricamento esercizi.json:', err);
+    document.getElementById('topic-list').innerHTML =
+      '<div style="color:var(--red);font-size:0.85rem;padding:12px">⚠️ Impossibile caricare gli esercizi.<br>Verifica che <code>esercizi.json</code> sia presente.</div>';
+  }
+}
+
+function renderTopics() {
+  const list = document.getElementById('topic-list');
+  if (!TOPICS.length) return;
+  list.innerHTML = TOPICS.map(t => `
+    <div class="topic-card ${t.id === state.selectedTopic ? 'selected' : ''}"
+         data-id="${t.id}" onclick="selectTopic('${t.id}', this)">
+      <div class="topic-icon">${t.icon}</div>
+      <div class="topic-info">
+        <div class="topic-name">${t.name}</div>
+        <div class="topic-count">${(EXERCISES[t.id] || []).length} esercizi</div>
+      </div>
+      <div class="topic-check">✓</div>
+    </div>
+  `).join('');
+}
+
+function selectTopic(id, el) {
+  state.selectedTopic = id;
+  document.querySelectorAll('.topic-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+/* ══════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() {
+  saveStats();
+  renderStats();
+  showScreen('screen-home');
+}
+
+function startExercise() {
+  newExercise();
+  showScreen('screen-exercise');
+}
+
+/* ══════════════════════════════════════════
+   EXERCISE
+══════════════════════════════════════════ */
+function newExercise() {
+  const pool = EXERCISES[state.selectedTopic] || EXERCISES[Object.keys(EXERCISES)[0]] || [];
+  if (!pool.length) return;
+  const ex = pool[Math.floor(Math.random() * pool.length)];
+  state.currentExercise = ex;
+  state.photoDataUrl = null;
+  state.hintVisible = false;
+  state.solVisible = false;
+
+  document.getElementById('ex-number').textContent = '#' + ex.id;
+  document.getElementById('ex-badge').textContent = TOPICS.find(t => t.id === state.selectedTopic)?.name || 'Telecom';
+  document.getElementById('ex-question').innerHTML = ex.question;
+
+  const fWrap = document.getElementById('ex-formula-wrap');
+  const fEl   = document.getElementById('ex-formula');
+  const fHint = document.getElementById('ex-formula-hint');
+  if (ex.formula) {
+    fWrap.style.display = 'block';
+    fEl.textContent = ex.formula;
+    fEl.style.display = 'none';       // hidden by default
+    fHint.style.display = 'flex';     // show tap hint
+  } else {
+    fWrap.style.display = 'none';
+  }
+
+  // Gestione immagine circuito
+  const circuitEl  = document.getElementById('ex-circuit');
+  const circuitImg = document.getElementById('ex-circuit-img');
+  if (ex.image) {
+    circuitImg.src = ex.image;
+    circuitImg.onerror = () => {
+      circuitEl.innerHTML = `<div class="ex-circuit-error">⚠️ Immagine non trovata: ${ex.image}</div>`;
+    };
+    circuitEl.style.display = 'block';
+  } else {
+    circuitEl.style.display = 'none';
+    circuitImg.src = '';
+  }
+
+  const pips = document.getElementById('ex-diff');
+  pips.innerHTML = [1,2,3].map(i =>
+    `<div class="diff-pip ${i <= ex.diff ? 'on' : ''}"></div>`
+  ).join('');
+
+  // reset camera
+  document.getElementById('cam-preview').classList.remove('visible');
+  document.getElementById('cam-ph').style.display = '';
+  document.getElementById('cam-area').classList.remove('has-photo');
+  document.getElementById('btn-send').disabled = true;
+  document.getElementById('file-input').value = '';
+}
+
+/* ══════════════════════════════════════════
+   FORMULA REVEAL
+══════════════════════════════════════════ */
+function toggleFormula() {
+  const fEl   = document.getElementById('ex-formula');
+  const fHint = document.getElementById('ex-formula-hint');
+  const isHidden = fEl.style.display === 'none' || fEl.style.display === '';
+  if (isHidden) {
+    fHint.style.display = 'none';
+    fEl.style.display   = 'block';
+  } else {
+    fEl.style.display   = 'none';
+    fHint.style.display = 'flex';
+  }
+}
+
+/* ══════════════════════════════════════════
+   CAMERA
+══════════════════════════════════════════ */
+function triggerCamera() {
+  document.getElementById('file-input').click();
+}
+
+function handlePhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    state.photoDataUrl = ev.target.result;
+    const prev = document.getElementById('cam-preview');
+    prev.src = state.photoDataUrl;
+    prev.classList.add('visible');
+    document.getElementById('cam-ph').style.display = 'none';
+    document.getElementById('cam-area').classList.add('has-photo');
+    document.getElementById('btn-send').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ══════════════════════════════════════════
+   AI CHECK
+══════════════════════════════════════════ */
+async function goCheck() {
+  showScreen('screen-checking');
+
+  // animate log
+  const log2 = document.getElementById('log2');
+  const log3 = document.getElementById('log3');
+  const log4 = document.getElementById('log4');
+  setTimeout(() => { log2.classList.add('done'); log3.classList.add('active'); }, 1000);
+  setTimeout(() => { log3.classList.add('done'); log4.classList.add('active'); }, 2200);
+
+  const result = await callAI();
+
+  if (!result) {
+    // Errore nella chiamata AI, torna alla home
+    setTimeout(() => goHome(), 3000);
+    return;
+  }
+
+  state.stats.total++;
+  if (result.isCorrect) { state.stats.correct++; state.stats.streak++; }
+  else { state.stats.streak = 0; }
+  saveStats();
+
+  setTimeout(() => showResult(result), 2800);
+}
+
+
+async function callAI() {
+  try {
+    let finalImage = null;
+    if (state.photoDataUrl) {
+      finalImage = await getOptimizedImage(state.photoDataUrl);
+    }
+
+    const payload = {
+      problem: state.currentExercise ? state.currentExercise.question : "Risolvi l'esercizio",
+      image: finalImage
+    };
+
+    const resp = await fetch('/api/ai_checker', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!resp.ok) {
+      const errData = await resp.json().catch(() => ({}));
+      throw new Error(errData.error || 'Errore dal server: ' + resp.status);
+    }
+
+    return await resp.json();
+
+  } catch (err) {
+    console.error("Errore callAI:", err);
+    document.getElementById('checking-msg').textContent = '❌ ' + err.message;
+    return null;
+  }
+}
+
+function showResult(data) {
+  showScreen('screen-result');
+
+  const icon = document.getElementById('result-icon');
+  const title = document.getElementById('result-title');
+  const score = document.getElementById('result-score');
+  const feedback = document.getElementById('ai-feedback');
+  const header = document.getElementById('result-header');
+
+  if (data.isCorrect) {
+    icon.textContent = '✅';
+    title.textContent = 'Corretto!';
+    header.style.background = 'rgba(16,185,129,0.1)';
+  } else {
+    icon.textContent = '❌';
+    title.textContent = 'Da rivedere';
+    header.style.background = 'rgba(239,68,68,0.1)';
+  }
+
+  score.textContent = data.correction || '';
+  feedback.textContent = data.feedback || 'Nessun feedback ricevuto.';
+
+  // Mostra suggerimento/soluzione se sbagliato
+  const helpSection = document.getElementById('help-section');
+  if (helpSection) {
+    helpSection.style.display = data.isCorrect ? 'none' : 'block';
+  }
+
+  renderStats();
+}
+
+function toggleHint() {
+  const area = document.getElementById('hint-area');
+  state.hintVisible = !state.hintVisible;
+  if (state.hintVisible) {
+    area.innerHTML = `
+      <div class="hint-card">
+        <div class="card-label">Suggerimento</div>
+        <div class="hint-text">${state.currentExercise.hint}</div>
+      </div>`;
+  } else {
+    area.innerHTML = '';
+  }
+}
+
+function toggleSolution() {
+  const area = document.getElementById('sol-area');
+  state.solVisible = !state.solVisible;
+  if (state.solVisible) {
+    area.innerHTML = `
+      <div class="sol-card">
+        <div class="card-label">Soluzione completa</div>
+        <div class="sol-formula">${state.currentExercise.solution}</div>
+      </div>`;
+  } else {
+    area.innerHTML = '';
+  }
+}
+
+/* ══════════════════════════════════════════
+   STATS
+══════════════════════════════════════════ */
+function loadStats() {
+  try {
+    const s = JSON.parse(localStorage.getItem('telecom_stats') || '{}');
+    state.stats = { total: s.total||0, correct: s.correct||0, streak: s.streak||0 };
+  } catch {}
+}
+function saveStats() {
+  try { localStorage.setItem('telecom_stats', JSON.stringify(state.stats)); } catch {}
+}
+function renderStats() {
+  document.getElementById('st-total').textContent   = state.stats.total;
+  document.getElementById('st-correct').textContent = state.stats.correct;
+  document.getElementById('st-streak').textContent  = state.stats.streak;
+}
+
+/* ══════════════════════════════════════════
+   PWA
+══════════════════════════════════════════ */
+let deferredPrompt = null;
+
+function setupPWA() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      console.log('SW registered:', reg.scope);
+    }).catch(err => console.warn('SW registration failed:', err));
+  }
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('install-banner').classList.add('visible');
+  });
+
+  document.getElementById('install-btn').addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    dismissInstall();
+  });
+
+  window.addEventListener('appinstalled', () => { dismissInstall(); });
+}
+
+function dismissInstall() {
+  document.getElementById('install-banner').classList.remove('visible');
+}
+
+function setupOfflineDetection() {
+  const badge = document.getElementById('offline-badge');
+  function update() { badge.classList.toggle('visible', !navigator.onLine); }
+  window.addEventListener('online', update);
+  window.addEventListener('offline', update);
+  update();
+}
+
+// Aggiungi questa funzione per rimpicciolire la foto prima di inviarla
+async function getOptimizedImage(base64Str) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.src = base64Str;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 1024; // Risoluzione sufficiente per Gemini
+            let width = img.width;
+            let height = img.height;
+
+            if (width > MAX_WIDTH) {
+                height = Math.round((height * MAX_WIDTH) / width);
+                width = MAX_WIDTH;
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.7)); // Comprime al 70%
+        };
+    });
+}
+
+/* ══════════════════════════════════════════
+   START app
+══════════════════════════════════════════ */
+init();
+</script>
+</body>
+</html>

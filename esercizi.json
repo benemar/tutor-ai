@@ -1,0 +1,160 @@
+{
+  "topics": [
+    { "id": "resistenze",       "name": "Resistenze",        "icon": "Ω"  },
+    { "id": "condensatori",     "name": "Condensatori",      "icon": "⊣⊢" },
+    { "id": "transitorio",      "name": "Transitorio RC",    "icon": "τ"  },
+    { "id": "elettrotecnica_ac","name": "Elettrotecnica AC", "icon": "∼"  }
+  ],
+  "exercises": {
+    "resistenze": [
+      {
+        "id": "R01",
+        "question": "Due resistori <strong>R₁ = 470 Ω</strong> e <strong>R₂ = 330 Ω</strong> sono collegati in <strong>serie</strong>. Calcola la resistenza equivalente (R_eq).",
+        "formula": "R_eq = R₁ + R₂",
+        "diff": 1,
+        "answer": "800 Ω",
+        "hint": "In serie, le resistenze si sommano semplicemente.",
+        "solution": "R_eq = R₁ + R₂ = 470 + 330 = 800 Ω"
+      },
+      {
+        "id": "R02",
+        "question": "Due resistori identici da <strong>100 Ω</strong> sono collegati in <strong>parallelo</strong>. Calcola la resistenza equivalente.",
+        "formula": "1/R_eq = 1/R₁ + 1/R₂  oppure  R_eq = (R₁·R₂)/(R₁+R₂)",
+        "diff": 2,
+        "answer": "50 Ω",
+        "hint": "Quando due resistenze uguali sono in parallelo, la Req è la metà di una singola resistenza.",
+        "solution": "R_eq = (100 · 100) / (100 + 100) = 10000 / 200 = 50 Ω",
+        "image": "img/R02_circuito.png"
+      },
+      {
+        "id": "R03",
+        "question": "Calcola la resistenza equivalente di un parallelo tra <strong>R₁ = 20 Ω</strong> e <strong>R₂ = 30 Ω</strong>.",
+        "formula": "R_eq = (R₁·R₂)/(R₁+R₂)",
+        "diff": 2,
+        "answer": "12 Ω",
+        "hint": "Usa la formula del prodotto fratto la somma.",
+        "solution": "R_eq = (20 · 30) / (20 + 30) = 600 / 50 = 12 Ω"
+      },
+      {
+        "id": "R04",
+        "question": "Un circuito è composto da una resistenza <strong>R₁ = 10 Ω</strong> in serie a un parallelo di due resistenze <strong>R₂ = 20 Ω</strong> e <strong>R₃ = 20 Ω</strong>. Calcola la R_tot.",
+        "formula": "R_tot = R₁ + (R₂//R₃)",
+        "diff": 3,
+        "answer": "20 Ω",
+        "hint": "Risolvi prima il parallelo tra R2 e R3, poi somma il risultato a R1.",
+        "solution": "Parallelo (R₂//R₃) = 20/2 = 10 Ω. \nR_tot = R₁ + 10 = 10 + 10 = 20 Ω",
+        "image": "img/R04_circuito.png"
+      }
+    ],
+    "condensatori": [
+      {
+        "id": "C01",
+        "question": "Due condensatori <strong>C₁ = 100 µF</strong> e <strong>C₂ = 220 µF</strong> sono collegati in <strong>parallelo</strong>. Calcola la capacità totale (C_tot).",
+        "formula": "C_tot = C₁ + C₂",
+        "diff": 1,
+        "answer": "320 µF",
+        "hint": "Attenzione: per i condensatori, le capacità si sommano quando sono in parallelo (l'opposto delle resistenze!).",
+        "solution": "C_tot = C₁ + C₂ = 100 + 220 = 320 µF"
+      },
+      {
+        "id": "C02",
+        "question": "Due condensatori da <strong>47 nF</strong> sono collegati in <strong>serie</strong>. Calcola la capacità equivalente.",
+        "formula": "C_eq = (C₁·C₂)/(C₁+C₂)",
+        "diff": 2,
+        "answer": "23.5 nF",
+        "hint": "In serie, la capacità equivalente di due condensatori uguali è la metà.",
+        "solution": "C_eq = 47 / 2 = 23.5 nF",
+        "image": "img/C02_circuito.png"
+      },
+      {
+        "id": "C03",
+        "question": "Calcola la capacità equivalente di tre condensatori da <strong>30 pF</strong> messi in <strong>serie</strong> tra loro.",
+        "formula": "1/C_eq = 1/C₁ + 1/C₂ + 1/C₃",
+        "diff": 3,
+        "answer": "10 pF",
+        "hint": "Essendo uguali e in serie: C_eq = C / n.",
+        "solution": "C_eq = 30 pF / 3 = 10 pF"
+      },
+      {
+        "id": "C04",
+        "question": "Un tecnico monta due condensatori in parallelo: <strong>C₁ = 10 nF</strong> e <strong>C₂ = 10 nF</strong>. Il blocco risultante è in serie con <strong>C₃ = 20 nF</strong>. Calcola la capacità totale.",
+        "formula": "C_tot = (C₁//C₂) in serie con C₃",
+        "diff": 3,
+        "answer": "10 nF",
+        "hint": "Somma i primi due (parallelo), poi calcola la serie con il terzo.",
+        "solution": "Parallelo (C₁//C₂) = 10 + 10 = 20 nF. \nSerie tra 20 nF e 20 nF = 20 / 2 = 10 nF",
+        "image": "img/C04_circuito.png"
+      }
+    ],
+    "transitorio": [
+      {
+        "id": "T01",
+        "question": "In un circuito RC con <strong>R = 220 kΩ</strong> e <strong>C = 47 µF</strong>, determina dopo quanto tempo il transitorio può considerarsi concluso e qual è la tensione sul condensatore dopo <strong>15 secondi</strong> se alimentato a <strong>12 V</strong>.",
+        "formula": "τ = R · C; Vc(t) = V₀(1 - e^(-t/τ))",
+        "diff": 3,
+        "answer": "T_fine ≈ 51.7 s; Vc ≈ 9.19 V",
+        "hint": "Il transitorio si considera concluso dopo 5 costanti di tempo (5τ).",
+        "solution": "1) τ = 220kΩ · 47µF = 10.34 s. 2) Fine transitorio = 5τ = 51.7 s. 3) Vc(15s) = 12 · (1 - e^(-15/10.34)) ≈ 9.19 V.",
+        "image": "img/T01_carica_rc.png"
+      },
+      {
+        "id": "T02",
+        "question": "Un condensatore <strong>C = 100 µF</strong> inizialmente carico a <strong>V₀ = 9 V</strong> si scarica attraverso una resistenza <strong>R = 10 kΩ</strong>. Calcola la costante di tempo τ e la tensione sul condensatore dopo <strong>2 secondi</strong>.",
+        "formula": "τ = R · C; Vc(t) = V₀ · e^(-t/τ)",
+        "diff": 2,
+        "answer": "τ = 1 s; Vc(2s) ≈ 1.22 V",
+        "hint": "In scarica la tensione decade esponenzialmente dal valore iniziale V₀. Usa e^(-t/τ) invece di (1 - e^(-t/τ)).",
+        "solution": "1) τ = 10kΩ · 100µF = 10000 · 0.0001 = 1 s.\n2) Vc(2s) = 9 · e^(-2/1) = 9 · e^(-2) = 9 · 0.1353 ≈ 1.22 V."
+      },
+      {
+        "id": "T03",
+        "question": "In un circuito RC serie con <strong>R = 4.7 kΩ</strong> e <strong>C = 220 µF</strong>, alimentato a <strong>V = 5 V</strong>, dopo quante costanti di tempo la tensione sul condensatore raggiunge circa il <strong>63.2%</strong> del valore finale? Calcola anche il valore assoluto di quella tensione.",
+        "formula": "τ = R · C; Vc(τ) = V · (1 - e^(-1)) ≈ 0.632 · V",
+        "diff": 1,
+        "answer": "τ = 1.034 s; Vc(τ) ≈ 3.16 V",
+        "hint": "Per definizione, dopo esattamente 1 costante di tempo (t = τ) il condensatore raggiunge il 63.2% della tensione di alimentazione.",
+        "solution": "1) τ = 4700 · 0.000220 = 1.034 s.\n2) Vc(τ) = 5 · (1 - e^(-1)) = 5 · 0.6321 ≈ 3.16 V.\nQuesto vale sempre: dopo 1τ si raggiunge sempre il 63.2% del valore finale."
+      }
+    ],
+    "elettrotecnica_ac": [
+      {
+        "id": "AC01",
+        "question": "Data una tensione alternata sinusoidale con valore di picco <strong>V_max = 325 V</strong> e frequenza <strong>f = 50 Hz</strong>, determina il valore efficace <strong>V_eff</strong> e la pulsazione <strong>ω</strong>.",
+        "formula": "V_eff = V_max / √2; ω = 2πf",
+        "diff": 2,
+        "answer": "V_eff ≈ 230 V; ω ≈ 314.16 rad/s",
+        "hint": "Il valore efficace in regime sinusoidale è circa il 70.7% del valore di picco.",
+        "solution": "1) V_eff = 325 / 1.414 = 229.84 V (circa 230V). 2) ω = 2 · π · 50 = 314.16 rad/s.",
+        "image": "img/AC01_sinusoide.png"
+      },
+      {
+        "id": "AC02",
+        "question": "Un voltmetro misura una tensione efficace <strong>V_eff = 115 V</strong>. Se la pulsazione è <strong>ω = 377 rad/s</strong>, calcola il valore di picco <strong>V_max</strong> e la frequenza <strong>f</strong>.",
+        "formula": "V_max = V_eff · √2; f = ω / 2π",
+        "diff": 3,
+        "answer": "V_max ≈ 162.6 V; f ≈ 60 Hz",
+        "hint": "Usa le formule inverse: per V_max moltiplica per √2, per la frequenza dividi la pulsazione per 2π.",
+        "solution": "1) V_max = 115 · 1.414 = 162.61 V. 2) f = 377 / (2 · 3.14159) ≈ 60 Hz.",
+        "image": null
+      },
+      {
+        "id": "AC03",
+        "question": "Un condensatore <strong>C = 10 µF</strong> è collegato a una tensione sinusoidale a <strong>f = 50 Hz</strong>. Calcola la sua reattanza capacitiva <strong>X_C</strong> e, sapendo che la tensione efficace è <strong>V = 230 V</strong>, determina la corrente efficace che lo attraversa.",
+        "formula": "X_C = 1 / (2πfC); I = V / X_C",
+        "diff": 2,
+        "answer": "X_C ≈ 318.3 Ω; I ≈ 0.722 A",
+        "hint": "La reattanza capacitiva diminuisce all'aumentare della frequenza. La corrente si ricava come in un normale resistore, usando X_C al posto di R.",
+        "solution": "1) X_C = 1 / (2 · π · 50 · 10·10⁻⁶) = 1 / 0.003142 ≈ 318.3 Ω.\n2) I = V / X_C = 230 / 318.3 ≈ 0.722 A."
+      },
+      {
+        "id": "AC04",
+        "question": "Un circuito RL serie ha <strong>R = 30 Ω</strong> e <strong>L = 0.1 H</strong>, alimentato a <strong>f = 50 Hz</strong> con tensione efficace <strong>V = 120 V</strong>. Calcola la reattanza induttiva <strong>X_L</strong>, l'impedenza <strong>Z</strong> e la corrente efficace <strong>I</strong>.",
+        "formula": "X_L = 2πfL; Z = √(R² + X_L²); I = V / Z",
+        "diff": 3,
+        "answer": "X_L ≈ 31.4 Ω; Z ≈ 43.4 Ω; I ≈ 2.76 A",
+        "hint": "In un circuito RL serie resistenza e reattanza non si sommano aritmeticamente, ma vettorialmente: usa il teorema di Pitagora per trovare Z.",
+        "solution": "1) X_L = 2 · π · 50 · 0.1 = 31.42 Ω.\n2) Z = √(30² + 31.42²) = √(900 + 987.2) = √1887.2 ≈ 43.4 Ω.\n3) I = 120 / 43.4 ≈ 2.76 A."
+      }
+    ]
+  }
+}
