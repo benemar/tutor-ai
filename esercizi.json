@@ -1,9 +1,25 @@
 {
   "topics": [
-    { "id": "resistenze",       "name": "Resistenze",        "icon": "Ω"  },
-    { "id": "condensatori",     "name": "Condensatori",      "icon": "⊣⊢" },
-    { "id": "transitorio",      "name": "Transitorio RC",    "icon": "τ"  },
-    { "id": "elettrotecnica_ac","name": "Elettrotecnica AC", "icon": "∼"  }
+    {
+      "id": "resistenze",
+      "name": "Resistenze",
+      "icon": "Ω"
+    },
+    {
+      "id": "condensatori",
+      "name": "Condensatori",
+      "icon": "⊣⊢"
+    },
+    {
+      "id": "transitorio",
+      "name": "Transitorio RC",
+      "icon": "τ"
+    },
+    {
+      "id": "elettrotecnica_ac",
+      "name": "Elettrotecnica AC",
+      "icon": "∼"
+    }
   ],
   "exercises": {
     "resistenze": [
@@ -84,6 +100,26 @@
         "hint": "Somma i primi due (parallelo), poi calcola la serie con il terzo.",
         "solution": "Parallelo (C₁//C₂) = 10 + 10 = 20 nF. \nSerie tra 20 nF e 20 nF = 20 / 2 = 10 nF",
         "image": "img/C04_circuito.png"
+      },
+      {
+        "id": "C05",
+        "question": "Nel circuito in figura, <strong>C₁ = 22 nF</strong> è in serie con il parallelo di <strong>C₂ = 33 nF</strong> e <strong>C₃ = 33 nF</strong>. Calcola la capacità equivalente totale <strong>C_eq</strong>.",
+        "formula": "C_par = C₂ + C₃;  C_eq = (C₁ · C_par) / (C₁ + C_par)",
+        "diff": 3,
+        "answer": "C_eq ≈ 16.5 nF",
+        "hint": "Procedi in due passi, dal gruppo più interno verso l'esterno.\n\nPasso 1 — Parallelo (C₂ // C₃):\nI condensatori in parallelo si sommano direttamente (come le resistenze in serie).\nC_par = C₂ + C₃ = 33 + 33 = 66 nF.\n\nPasso 2 — Serie tra C₁ e C_par:\nDue condensatori in serie si combinano con la formula prodotto/somma:\nC_eq = (C₁ · C_par) / (C₁ + C_par) = (22 · 66) / (22 + 66) = 1452 / 88 ≈ 16.5 nF.\n\nRegola da ricordare: in serie la capacità equivalente è SEMPRE minore del condensatore più piccolo (qui 16.5 nF < 22 nF ✓).",
+        "solution": "1) C_par = 33 + 33 = 66 nF.\n2) C_eq = (22 · 66) / (22 + 66) = 1452 / 88 ≈ 16.5 nF.",
+        "image": "img/C05_circuito.png"
+      },
+      {
+        "id": "C06",
+        "question": "Nel circuito in figura sono presenti due rami in <strong>parallelo</strong>: il ramo superiore contiene <strong>C₁ = 40 µF</strong> e <strong>C₂ = 40 µF</strong> in serie; il ramo inferiore contiene <strong>C₃ = 60 µF</strong> e <strong>C₄ = 60 µF</strong> in serie. Calcola la capacità totale <strong>C_tot</strong>.",
+        "formula": "C_A = (C₁·C₂)/(C₁+C₂);  C_B = (C₃·C₄)/(C₃+C₄);  C_tot = C_A + C_B",
+        "diff": 3,
+        "answer": "C_tot = 50 µF",
+        "hint": "Il circuito ha una struttura a due livelli: prima risolvi le serie all'interno di ogni ramo, poi sommi i risultati perché i due rami sono in parallelo.\n\nPasso 1 — Ramo superiore (C₁ serie C₂, valori uguali):\nQuando due condensatori uguali sono in serie, la capacità equivalente è esattamente la metà.\nC_A = C₁ / 2 = 40 / 2 = 20 µF.\n\nPasso 2 — Ramo inferiore (C₃ serie C₄, valori uguali):\nStessa regola: C_B = C₃ / 2 = 60 / 2 = 30 µF.\n\nPasso 3 — Parallelo tra i due rami:\nI rami in parallelo si sommano: C_tot = C_A + C_B = 20 + 30 = 50 µF.\n\nTrucco utile: due condensatori identici C in serie danno sempre C/2; due condensatori identici C in parallelo danno sempre 2C. Tienilo a mente per i calcoli rapidi.",
+        "solution": "1) Ramo sup: C_A = 40/2 = 20 µF.\n2) Ramo inf: C_B = 60/2 = 30 µF.\n3) C_tot = 20 + 30 = 50 µF.",
+        "image": "img/C06_circuito.png"
       }
     ],
     "transitorio": [
